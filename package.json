@@ -39,6 +39,6 @@
   },
   "devDependencies": {
     "eslint-config-htmlacademy": "0.6.0",
-    "eslint-plugin-react": "7.21.4"
+    "eslint-plugin-react": "^7.21.4"
   }
 }
