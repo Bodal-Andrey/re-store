@@ -4,11 +4,27 @@ import Spinner from "../spinner/spinner.jsx";
 import ErrorIndicator from "../error-indicator/error-indicator.jsx";
 import { connect } from "react-redux";
 import { withBookstoreService } from "../hoc/with-bookstore-service.js";
-import { booksLoaded, booksRequested, booksError } from "../../actions/index.js";
+import { fetchBooks } from "../../actions/index.js";
 import compose from "../../utils/compose.js";
 import "./book-list.css";
 
-class BookList extends React.Component {
+const BookList = ({ books }) => {
+  return (
+    <ul className="book-list">
+      {
+        books.map((book) => {
+          return (
+            <li key={book.id}>
+              <BookListItem book={book} />
+            </li>
+          );
+        })
+      }
+    </ul>
+  );
+};
+
+class BookListContainer extends React.Component {
   componentDidMount() {
     this.props.fetchBooks();
   }
@@ -24,19 +40,7 @@ class BookList extends React.Component {
       return <ErrorIndicator />;
     }
 
-    return (
-      <ul className="book-list">
-        {
-          books.map((book) => {
-            return (
-              <li key={book.id}>
-                <BookListItem book={book} />
-              </li>
-            );
-          })
-        }
-      </ul>
-    );
+    return <BookList books={books} />
   }
 }
 
@@ -51,16 +55,11 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   const { bookstoreService } = ownProps;
   return {
-    fetchBooks: () => {
-      dispatch(booksRequested());
-      bookstoreService.getBooks()
-        .then((data) => dispatch(booksLoaded(data)))
-        .catch((err) => dispatch(booksError(err)));
-    }
+    fetchBooks: fetchBooks(bookstoreService, dispatch),
   };
 };
 
 export default compose(
   withBookstoreService(),
   connect(mapStateToProps, mapDispatchToProps)
-)(BookList);
+)(BookListContainer);
